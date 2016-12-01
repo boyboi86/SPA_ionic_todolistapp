@@ -1,32 +1,5 @@
 (function(){
-var app = angular.module('starter', ['ionic'])
-/*local variable for notes*/
-var notes = [];
-/*local service to track the correct note from params to controller*/
-  function getNote(noteId){
-    for(var i = 0; i < notes.length; i++){
-      if(notes[i].id === noteId) {
-        return notes[i]
-      }
-    }
-    return undefined;
-  }
-
-  /*local service to update the correct note in editCtrl*/
-function updateNote(note) {
-  for (var i = 0; i < notes.length; i++) {
-    if (notes[i].id === note.id) {
-      notes[i] = note;
-      return;
-    }
-  }
-}
-
-/*local service to add new note in addCtrl*/
-function createNote(note) {
-  notes.push(note);
-}
-
+var app = angular.module('mynotes', ['ionic', 'mynotes.notestore'])
 
 /* App config */
 app.config(function($stateProvider, $urlRouterProvider){
@@ -51,25 +24,25 @@ app.config(function($stateProvider, $urlRouterProvider){
   $urlRouterProvider.otherwise('/list');
 })
 /* list html controller */
-app.controller('ListCtrl', function($scope) {
+app.controller('ListCtrl', function($scope, noteStore) {
 
-  $scope.notes = notes;
+  $scope.notes = noteStore.list();
 
 })
 
 /* edit page controller */
-app.controller('EditCtrl', function($scope, $state) {
+app.controller('EditCtrl', function($scope, $state, noteStore) {
 
-  $scope.note = angular.copy(getNote($state.params.noteId));
+  $scope.note = angular.copy(noteStore.get($state.params.noteId));
 
   $scope.save = function() {
-    updateNote($scope.note);
+    noteStore.update($scope.note);
     $state.go('list');
   };
 });
 
 /* Add page controller */
-app.controller('AddCtrl', function($scope, $state) {
+app.controller('AddCtrl', function($scope, $state, noteStore) {
 
   $scope.note = {
     id: new Date().getTime().toString(),
@@ -78,7 +51,7 @@ app.controller('AddCtrl', function($scope, $state) {
   };
 
   $scope.save = function() {
-    createNote($scope.note);
+    noteStore.create($scope.note);
     $state.go('list');
   };
 });
