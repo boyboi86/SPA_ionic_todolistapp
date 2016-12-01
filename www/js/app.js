@@ -28,6 +28,10 @@ app.controller('ListCtrl', function($scope, noteStore) {
 
   $scope.notes = noteStore.list();
 
+  $scope.remove = function(noteId){
+    noteStore.remove(noteId);
+  }
+
 })
 
 /* edit page controller */
